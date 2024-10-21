@@ -11,7 +11,7 @@
     </parent>
     <groupId>com.ffi.api</groupId>
     <artifactId>pajak</artifactId>
-    <version>1.0</version>
+    <version>24.10.002</version>
     <name>NewPajak</name>
     <description>apiNewPajak</description>
     <properties>

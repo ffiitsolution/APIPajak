@@ -39,7 +39,7 @@ public class IndexController {
     public @ResponseBody
     Map<String, Object> tes() {
         Map<String, Object> map = new HashMap<>();
-        map.put("VERSION", "ITD FFI 2024 1.0.1");
+        map.put("VERSION", "ITD FFI 24.10.002");
         return map;
     }
 
