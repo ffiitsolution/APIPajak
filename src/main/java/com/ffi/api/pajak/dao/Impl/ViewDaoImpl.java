@@ -59,26 +59,26 @@ public class ViewDaoImpl implements ViewDao {
             	SUM(BIAYA_ANTAR) AS BIAYA_ANTAR,
             	SUM(PJK_B_ANTAR) AS PJK_B_ANTAR,
             	SUM(TOTAL_ROUNDING) AS TOTAL_ROUNDING,
-            	SUM(PENJUALAN_CD) + SUM(DPP) + SUM(PAJAK_RESTORAN) + SUM(PPN) + SUM(BIAYA_ANTAR) + SUM(PJK_B_ANTAR) AS TOTAL,
+            	SUM(PENJUALAN_CD) + SUM(DPP) + SUM(PAJAK_RESTORAN) + SUM(PPN) + SUM(BIAYA_ANTAR) + SUM(PJK_B_ANTAR) AS TOTAL_BEFORE_ROUNDING,
             	SUM(TOTAL_ROUNDING) + (SUM(PENJUALAN_CD) + SUM(DPP) + SUM(PAJAK_RESTORAN) + SUM(PPN) + SUM(BIAYA_ANTAR) + SUM(PJK_B_ANTAR)) AS TOTAL_SALES
             FROM
             	(
             	SELECT
             		OUTLET_CODE,
-            		BILL_NO,
-            		POS_CODE,
-            		TRANS_DATE,
-            		ORDER_TYPE,
-            		BILL_TIME,
-            		SUM(TOTAL_AMOUNT) AS PENJUALAN_F_B ,
-            		SUM(TOTAL_DISCOUNT) AS DISCOUNT ,
-            		SUM(PENJUALAN_CD) AS PENJUALAN_CD ,
-            		SUM(TOTAL_AMOUNT)-(SUM(PENJUALAN_CD)+ SUM(TOTAL_DISCOUNT)) AS DPP,
-            		SUM(TOTAL_TAX) AS PAJAK_RESTORAN,
-            		SUM(AMT_TAX)AS PPN,
-            		SUM(TOTAL_CHARGE) AS BIAYA_ANTAR,
-            		SUM(TOTAL_TAX_CHARGE) AS PJK_B_ANTAR,
-            		SUM(TOTAL_ROUNDING) AS TOTAL_ROUNDING
+                BILL_NO,
+                POS_CODE,
+                TRANS_DATE,
+                ORDER_TYPE,
+                BILL_TIME,
+                SUM(TOTAL_AMOUNT) - SUM(PENJUALAN_CD) AS PENJUALAN_F_B,
+                SUM(TOTAL_DISCOUNT) AS DISCOUNT ,
+                SUM(PENJUALAN_CD) AS PENJUALAN_CD ,
+                SUM(TOTAL_AMOUNT)-(SUM(PENJUALAN_CD)+ SUM(TOTAL_DISCOUNT)) AS DPP,
+                SUM(TOTAL_TAX) - SUM(AMT_TAX) AS PAJAK_RESTORAN,
+                SUM(AMT_TAX) AS PPN,
+                SUM(TOTAL_CHARGE) AS BIAYA_ANTAR,
+                SUM(TOTAL_TAX_CHARGE) AS PJK_B_ANTAR,
+                SUM(TOTAL_ROUNDING) AS TOTAL_ROUNDING
             	FROM
             		(
             		SELECT
