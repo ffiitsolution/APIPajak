@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -35,6 +36,9 @@ public class IndexController {
     private static final String DATE_PATTERN = "dd-MMM-yyyy";
     private static final Pattern DATE_REGEX = Pattern.compile("^(0[1-9]|[12][0-9]|3[01])-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-\\d{4}$");
 
+    private static int MIN_RANGE_VALUE = 1;
+    private static int MAX_RANGE_VALUE = 1000;
+    
     @RequestMapping(value = "/version")
     public @ResponseBody
     Map<String, Object> tes() {
@@ -61,7 +65,21 @@ public class IndexController {
         return true;
     }
 
-    @RequestMapping(value = "/report-pajak-pratama-bekasi-json", produces = MediaType.APPLICATION_JSON_VALUE)
+    private boolean isValidRange(int start, int end) {
+        try {
+            int startNumber = start;
+            int endNumber = end;
+            if (endNumber < startNumber) {
+                return false;
+            }
+            return (startNumber >= MIN_RANGE_VALUE && startNumber <= MAX_RANGE_VALUE) && (endNumber >= MIN_RANGE_VALUE && endNumber <= MAX_RANGE_VALUE);
+        } catch (NumberFormatException e) {
+            System.err.println(LocalDateTime.now().format(DATE_TIME_FORMATER) + " " +e.getMessage());
+            return false;
+        }
+    }
+
+    @GetMapping(value = "/list-trans.json", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Endpoint for return result report pajak Pratama Bekasi Store in JSON format", response = Object.class)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
@@ -84,6 +102,26 @@ public class IndexController {
             rm.setMessage("Failed getting completed value. date, start, end are required");
             return rm;
         }
+        
+        int startNumber = 0;
+        int endNumber = 0;
+        
+        try {
+            startNumber = Integer.parseInt(start);
+            endNumber = Integer.parseInt(end);
+        } catch (NumberFormatException e) {
+            System.err.println(LocalDateTime.now().format(DATE_TIME_FORMATER) + " " + "Invalid range format: " + start + ", " + end);
+            rm.setSuccess(false);
+            rm.setMessage("Invalid start or end format. Only accepted number value");
+            return rm;
+        }
+
+        if (!isValidRange(startNumber, endNumber)) {
+            System.err.println(LocalDateTime.now().format(DATE_TIME_FORMATER) + " " + "Invalid range format: " + start + ", " + end);
+            rm.setSuccess(false);
+            rm.setMessage("Invalid start or end format. Value should be in 1 - 1000 range.");
+            return rm;
+        }
 
         if (!isValidDate(date)) {
             System.err.println(LocalDateTime.now().format(DATE_TIME_FORMATER) + " " + "Invalid date format: " + date);
@@ -95,22 +133,27 @@ public class IndexController {
         ref.put("startDate", date);
         ref.put("endDate", date);
         ref.put("outletCode", "0232");
+        ref.put("startNumber", start);
+        ref.put("endNumber", end);
 
-        List<Map<String, Object>> list = new ArrayList<>();
+        List<Map<String, Object>> listAll = new ArrayList<>();
+        List<Map<String, Object>> listAfterFilter = new ArrayList<>();
         Outlet outlet = new Outlet();
 
         try {
-            list = viewServices.generateReportPajakJson(ref);
+            listAll = viewServices.generateReportPajakJson(ref);
+            listAfterFilter = viewServices.generateReportPajakJsonWithMinMaxValue(ref);
             outlet = viewServices.getOutletDetail(ref);
+            
             outlet.setDate(date);
-            outlet.setRequestRows(start + "-" + end);
-            outlet.setActualResult(list.size());
+            outlet.setRequestRows(startNumber + "-" + endNumber);
+            outlet.setActualResult(listAll.size());
 
             rm.setSuccess(true);
             rm.setMessage("OK");
             rm.setOutlet(outlet);
-            rm.setItem(list);
-            System.out.println(LocalDateTime.now().format(DATE_TIME_FORMATER) + " " + "Success generate report pajak");
+            rm.setItem(listAfterFilter);
+            System.out.println(LocalDateTime.now().format(DATE_TIME_FORMATER) + " " + "Success generate report pajak json with param: " + " " + date + " " + startNumber + "-" + endNumber );
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Failed while generate Report Pajak");

@@ -16,6 +16,9 @@ public class viewServices {
     public List<Map<String, Object>> generateReportPajakJson(Map<String, String> ref) throws Exception {
         return viewDao.generateReportPajakJson(ref);
     }
+    public List<Map<String, Object>> generateReportPajakJsonWithMinMaxValue(Map<String, String> ref) throws Exception {
+        return viewDao.generateReportPajakJsonWithMinMaxValue(ref);
+    }
     public Outlet getOutletDetail(Map<String, String> ref) throws Exception {
         return viewDao.getOutletDetail(ref);
     }

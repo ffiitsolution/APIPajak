@@ -6,5 +6,6 @@ import java.util.Map;
 
 public interface ViewDao {
     public List<Map<String, Object>> generateReportPajakJson(Map<String, String> ref) throws Exception;    
+    public List<Map<String, Object>> generateReportPajakJsonWithMinMaxValue(Map<String, String> ref) throws Exception;    
     public Outlet getOutletDetail(Map<String, String> ref) throws Exception;    
 }
