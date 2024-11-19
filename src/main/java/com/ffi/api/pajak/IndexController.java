@@ -47,7 +47,7 @@ public class IndexController {
     public @ResponseBody
     Map<String, Object> tes() {
         Map<String, Object> map = new HashMap<>();
-        map.put("VERSION", "ITD FFI 24.10.002");
+        map.put("Version", "ITD_FFI_24.11.19.004");
         map.put("OutletCode", appConfig.getOutletCode());
         return map;
     }
