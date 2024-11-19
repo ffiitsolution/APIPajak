@@ -3,6 +3,7 @@ package com.ffi.api.pajak;
 import com.ffi.api.pajak.model.Outlet;
 import com.ffi.api.pajak.model.ResponseMessage;
 import com.ffi.api.pajak.services.viewServices;
+import com.ffi.api.pajak.utils.AppConfig;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.swagger.annotations.ApiOperation;
@@ -31,7 +32,10 @@ public class IndexController {
 
     @Autowired
     viewServices viewServices;
-
+    
+    @Autowired
+    AppConfig appConfig;
+    
     DateTimeFormatter DATE_TIME_FORMATER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final String DATE_PATTERN = "dd-MMM-yyyy";
     private static final Pattern DATE_REGEX = Pattern.compile("^(0[1-9]|[12][0-9]|3[01])-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-\\d{4}$");
@@ -44,6 +48,7 @@ public class IndexController {
     Map<String, Object> tes() {
         Map<String, Object> map = new HashMap<>();
         map.put("VERSION", "ITD FFI 24.10.002");
+        map.put("OutletCode", appConfig.getOutletCode());
         return map;
     }
 
@@ -132,7 +137,7 @@ public class IndexController {
 
         ref.put("startDate", date);
         ref.put("endDate", date);
-        ref.put("outletCode", "0232");
+        ref.put("outletCode", appConfig.getOutletCode());
         ref.put("startNumber", start);
         ref.put("endNumber", end);
 
