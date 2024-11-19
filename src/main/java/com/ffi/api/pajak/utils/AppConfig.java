@@ -11,9 +11,12 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 @Configuration
 @PropertySource("file:C:/API_CONFIG/boffi.properties")
 public class AppConfig {
-    @Autowired
-    private Environment env;
-    
+  
+  public final String backendVersion = "1.1124.19.004a";
+  
+  @Autowired
+  private Environment env;
+
     public String get(String key) {
         String value = "";
         if (env != null) {

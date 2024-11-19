@@ -2,7 +2,8 @@ package com.ffi.api.pajak;
 
 import com.ffi.api.pajak.model.Outlet;
 import com.ffi.api.pajak.model.ResponseMessage;
-import com.ffi.api.pajak.services.viewServices;
+import com.ffi.api.pajak.services.ViewServices;
+import com.ffi.api.pajak.services.ProcessService;
 import com.ffi.api.pajak.utils.AppConfig;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +33,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class IndexController {
 
     @Autowired
-    viewServices viewServices;
+    ViewServices viewServices;
+    
+    @Autowired
+    ProcessService processServices;
     
     @Autowired
     AppConfig appConfig;
@@ -43,12 +48,26 @@ public class IndexController {
     private static int MIN_RANGE_VALUE = 1;
     private static int MAX_RANGE_VALUE = 1000;
     
+    @PostConstruct
+    public void init() {
+        try {
+            // Update backend version 
+            Map<String, Object> param = new HashMap();
+            param.put("menuId", "PAJAK_BE");
+            param.put("description", appConfig.backendVersion);
+            processServices.updateVersion(param);
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+        }
+    }
+    
     @RequestMapping(value = "/version")
     public @ResponseBody
     Map<String, Object> tes() {
         Map<String, Object> map = new HashMap<>();
-        map.put("Version", "ITD_FFI_24.11.19.004");
-        map.put("OutletCode", appConfig.getOutletCode());
+        map.put("backendVersion", appConfig.backendVersion);
+        map.put("outletCode", appConfig.getOutletCode());
+        map.put("message", "OK");
         return map;
     }
 
