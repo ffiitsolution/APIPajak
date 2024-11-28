@@ -12,8 +12,12 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 @PropertySource("file:C:/API_CONFIG/boffi.properties")
 public class AppConfig {
   
-  public final String backendVersion = "1.1124.19.004a";
-  
+  public final String backendVersion = "1.1124.28.005a";
+  // update version bisa menggunakan versi 005a
+  // versi 005a belum deploy di store
+  // versi ini memiliki lebih sedikit dependencies jar file 24mb
+  // please remove this comments after deploy new feature or bug fixing
+    
   @Autowired
   private Environment env;
 
